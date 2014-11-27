@@ -2,18 +2,18 @@ package method_one;
 
 public class Memory {
 
+	   /*
+	    *模拟一个主存块,每个主存块的有组内序号和组间序号 
+	    * 
+	    * */
 	    private int memory_num;//主存的标号
 	    
 	    private int memory_arr_num;//组内序号
-	    
-	    private String info="";
 	    
 	    public Memory(int memory_num,int memory_arr_num)
 	    {
 	    	 this.memory_num=memory_num;
 	         this.memory_arr_num=memory_arr_num;
-	         this.info=this.memory_num+"-"+this.memory_arr_num;
-	         //System.out.println(this.info);
 	    }
 	    
 	    public int get_Memory_num()

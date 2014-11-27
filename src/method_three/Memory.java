@@ -1,7 +1,7 @@
 package method_three;
 
 public class Memory {
-
+      
 	private int memory_num;// 主存的组号
 	private int memory_arr_num;// 组内序号
 

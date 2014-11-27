@@ -5,37 +5,50 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class Cache {
-
+     
+	  /*
+	   * 组相联映射,
+	   * cache为2路组联,分8个组
+	   * 主存是256个组，每组8块,共2048块
+	   * */
 	private Map<Integer, HashMap<Integer, Memory>> cache_memory_set;
-
+    
 	private HashMap<Integer, Memory> cache_memory_arr_set;
 
 	private Memory[] memory;
 
 	public Cache() {
 		this.memory = new Memory[2048];
-		for (int i = 0; i < 256; i++) {
-			for (int j = 0; j < 8; j++) {
-				this.memory[i * 8 + j] = new Memory(i, j);
+		for (int memoryNum = 0; memoryNum< 256; memoryNum++) {
+			for (int memoryArrInnerNum = 0; memoryArrInnerNum< 8; memoryArrInnerNum++) {
+				this.memory[memoryNum * 8 + memoryArrInnerNum] = new Memory(memoryNum, memoryArrInnerNum);
 			}
 		}
 
 		this.cache_memory_set = new HashMap<Integer, HashMap<Integer, Memory>>();
 
-		for (int i = 0; i < 8; i++) {
+		 /*
+		  * cache用一个Map来为主要的数据结构,此Map中填写第二个范式也是一个Map,作为cache每个组的表示
+		  * */
+		for (int cacheArrNum = 0; cacheArrNum < 8; cacheArrNum++) {
 			this.cache_memory_arr_set = new HashMap<Integer, Memory>();
-			for (int j = 0; j < 2; j++) {
-				int x = (int) (Math.random() * 255);// 随机生成主存的组内序号
-				this.cache_memory_arr_set.put(j, this.memory[x * 8 + i]);
+			for (int cacheArrInnerNum = 0; cacheArrInnerNum < 2; cacheArrInnerNum++) {
+				int memoryTagRandom = (int) (Math.random() * 255);// 随机生成主存的序号
+				this.cache_memory_arr_set.put(cacheArrInnerNum, this.memory[memoryTagRandom * 8 + cacheArrNum]);
 			}
-			this.cache_memory_set.put(i, this.cache_memory_arr_set);
+			this.cache_memory_set.put(cacheArrNum, this.cache_memory_arr_set);
 		}
 	}
-
-	public void Entry_set_cache() {
+   
+	/*
+	 **查看CACHE的内存镜像
+	 * */
+	public void observeeEntrysetIncache() 
+	{
 		Iterator iterator = this.cache_memory_set.entrySet().iterator();
 
-		while (iterator.hasNext()) {
+		while (iterator.hasNext()) 
+		{
 			Map.Entry<Integer, HashMap<Integer, Memory>> entry = (Map.Entry<Integer, HashMap<Integer, Memory>>) iterator
 					.next();
 
@@ -57,26 +70,29 @@ public class Cache {
 		}
 	}
 
-	public void Find_In_Cache_Set(Memory memory) {
+	public void findInCacheSet(Memory memory) {
 		/**
-		 * @params 先是在主存组内序号进行查找 然后再比较主存的组号,未命中的话,默认放在cache的第一组
+		 * @author 先是在主存组内序号进行查找 然后再比较主存的组号,未命中的话,默认放在cache的第一组
 		 * */
 		int cache_arr_num = memory.get_Memory_arr_num();
-		HashMap<Integer, Memory> arr_map = this.cache_memory_set
-				.get(cache_arr_num);
+		HashMap<Integer, Memory> arr_map = this.cache_memory_set.get(cache_arr_num);
 
 		Iterator arr_iterator = arr_map.entrySet().iterator();
 		while (true) {
-
-			if (!arr_iterator.hasNext()) {
+         /*
+          *组内是cache组内是顺序查找  
+          * */
+			if (!arr_iterator.hasNext()) 
+			{
 				System.out.println("no target!!");
 				arr_map.put(0, memory);
 				break;
-			} else {
-				Map.Entry<Integer, Memory> arr_entry = (Map.Entry<Integer, Memory>) arr_iterator
-						.next();
-				if (memory.get_Memory_num() == arr_entry.getValue()
-						.get_Memory_num()) {
+			} 
+			else 
+			{
+				Map.Entry<Integer, Memory> arr_entry = (Map.Entry<Integer, Memory>) arr_iterator.next();
+				if (memory.get_Memory_num() == arr_entry.getValue().get_Memory_num()) 
+				{
 					System.out.println("target!!");
 					break;
 				}
@@ -87,10 +103,10 @@ public class Cache {
 
 	public static void main(String[] args) {
 		Cache test = new Cache();
-		test.Entry_set_cache();
+		test.observeeEntrysetIncache();
 		Memory test_memory = new Memory(0, 5);
-		test.Find_In_Cache_Set(test_memory);
-		test.Find_In_Cache_Set(test_memory);
+		test.findInCacheSet(test_memory);
+		test.findInCacheSet(test_memory);
 
 	}
 
